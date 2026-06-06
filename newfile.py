@@ -4,6 +4,7 @@ import json
 import os
 
 TOKEN = os.getenv("TOKEN_BOT")
+print("TOKEN =", TOKEN)
 ADMIN_ID = 8205606321
 
 bot = telebot.TeleBot(TOKEN)
