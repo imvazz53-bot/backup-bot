@@ -2,26 +2,34 @@ import telebot
 from telebot import types
 import json
 import os
+import time
 
-TOKEN = os.getenv("TOKEN_BOT")
-print("TOKEN =", TOKEN)
+TOKEN = os.getenv("BOT_TOKEN")
+
+if not TOKEN:
+    raise ValueError("BOT_TOKEN tidak ditemukan")
+
 ADMIN_ID = 8205606321
 
 bot = telebot.TeleBot(TOKEN)
 
 DB_FILE = "backup.json"
 
+# Membuat database jika belum ada
 if not os.path.exists(DB_FILE):
-    with open(DB_FILE, "w") as f:
+    with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump({"users": {}, "files": []}, f)
 
+
 def load_db():
-    with open(DB_FILE, "r") as f:
+    with open(DB_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def save_db(data):
-    with open(DB_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+    with open(DB_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -60,6 +68,7 @@ Semua file yang Anda kirim akan tersimpan sebagai cadangan.
         reply_markup=markup
     )
 
+
 @bot.message_handler(func=lambda m: m.text == "ℹ️ Bantuan")
 def bantuan(message):
     bot.reply_to(
@@ -68,14 +77,14 @@ def bantuan(message):
 📌 Cara Penggunaan
 
 1. Kirim foto atau video.
-2. File akan tersimpan.
+2. File akan tersimpan otomatis.
 3. Gunakan /mybackup untuk melihat backup Anda.
 """
     )
 
+
 @bot.message_handler(content_types=['photo'])
 def save_photo(message):
-
     data = load_db()
 
     data["files"].append({
@@ -87,14 +96,11 @@ def save_photo(message):
 
     save_db(data)
 
-    bot.reply_to(
-        message,
-        "✅ Foto berhasil dibackup."
-    )
+    bot.reply_to(message, "✅ Foto berhasil dibackup.")
+
 
 @bot.message_handler(content_types=['video'])
 def save_video(message):
-
     data = load_db()
 
     data["files"].append({
@@ -106,20 +112,16 @@ def save_video(message):
 
     save_db(data)
 
-    bot.reply_to(
-        message,
-        "✅ Video berhasil dibackup."
-    )
+    bot.reply_to(message, "✅ Video berhasil dibackup.")
+
 
 @bot.message_handler(commands=['mybackup'])
 def mybackup(message):
-
     data = load_db()
 
     found = False
 
     for item in data["files"]:
-
         if item["user_id"] == message.from_user.id:
 
             found = True
@@ -142,6 +144,7 @@ def mybackup(message):
             "📂 Anda belum memiliki backup."
         )
 
+
 @bot.message_handler(commands=['saya'])
 def users(message):
 
@@ -154,13 +157,16 @@ def users(message):
 
     for uid, info in data["users"].items():
 
+        username = info.get("username") or "-"
+
         text += (
             f"Nama: {info['name']}\n"
             f"ID: {uid}\n"
-            f"Username: @{info['username']}\n\n"
+            f"Username: {username}\n\n"
         )
 
     bot.send_message(message.chat.id, text)
+
 
 @bot.message_handler(commands=['backup'])
 def backup(message):
@@ -169,6 +175,10 @@ def backup(message):
         return
 
     data = load_db()
+
+    if not data["files"]:
+        bot.send_message(message.chat.id, "Belum ada file backup.")
+        return
 
     for item in data["files"]:
 
@@ -188,14 +198,21 @@ def backup(message):
             bot.send_video(
                 message.chat.id,
                 item["file_id"],
-                caption=caption)
-# 
-=# ======================
-# RUN BOT (RAILWAY FIX)
-# ======================
-print("🚀 Backup Bot Aktif...")
+                caption=caption
+            )
 
-bot.infinity_polling(
-    timeout=60,
-    long_polling_timeout=60
-)
+
+print("✅ Backup Bot Aktif...")
+
+while True:
+    try:
+        bot.infinity_polling(
+            skip_pending=True,
+            timeout=60,
+            long_polling_timeout=60
+        )
+
+    except Exception as e:
+        print("❌ Error:", e)
+        print("🔄 Menghubungkan ulang dalam 10 detik...")
+        time.sleep(10)
