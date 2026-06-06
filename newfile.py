@@ -188,20 +188,14 @@ def backup(message):
             bot.send_video(
                 message.chat.id,
                 item["file_id"],
-                caption=caption
-            )
+                caption=caption)
+# 
+=# ======================
+# RUN BOT (RAILWAY FIX)
+# ======================
+print("🚀 Backup Bot Aktif...")
 
-import time
-
-print("Backup Bot Aktif...")
-
-while True:
-    try:
-        bot.infinity_polling(
-            timeout=60,
-            long_polling_timeout=60
-        )
-    except Exception as e:
-        print("Error:", e)
-        print("Mencoba menghubungkan ulang dalam 10 detik...")
-        time.sleep(10)
+bot.infinity_polling(
+    timeout=60,
+    long_polling_timeout=60
+)
