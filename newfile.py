@@ -22,8 +22,14 @@ if not os.path.exists(DB_FILE):
 
 
 def load_db():
-    with open(DB_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(DB_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return {
+            "users": {},
+            "files": []
+        }
 
 
 def save_db(data):
@@ -52,8 +58,8 @@ def start(message):
     markup.add("ℹ️ Bantuan")
 
     bot.send_message(
-        message.chat.id,
-        """
+    message.chat.id,
+    """
 🔐 Selamat Datang di Backup Bot
 
 Simpan foto dan video penting Anda dengan mudah.
@@ -63,9 +69,9 @@ Simpan foto dan video penting Anda dengan mudah.
 📂 Backup Saya
 ℹ️ Bantuan
 
-Semua file yang Anda kirim akan tersimpan sebagai cadangan.
+Semua file yang Anda kirim akan tersimpan sebagai cadangan pribadi.
 """,
-        reply_markup=markup
+    reply_markup=markup
     )
 
 
@@ -113,7 +119,6 @@ def save_video(message):
     save_db(data)
 
     bot.reply_to(message, "✅ Video berhasil dibackup.")
-
 
 @bot.message_handler(commands=['mybackup'])
 def mybackup(message):
@@ -203,6 +208,8 @@ def backup(message):
 
 
 print("✅ Backup Bot Aktif...")
+
+bot.remove_webhook()
 
 while True:
     try:
