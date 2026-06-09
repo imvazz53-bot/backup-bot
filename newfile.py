@@ -117,8 +117,8 @@ def tombol_video(message):
         message.chat.id,
         "🎥 Silakan kirim video yang ingin dibackup."
     )
-    
-    @bot.message_handler(content_types=['video'])
+
+@bot.message_handler(content_types=['video'])
 def save_video(message):
 
     data = load_db()
