@@ -94,7 +94,7 @@ def tombol_foto(message):
         "📸 Silakan kirim foto yang ingin dibackup."
     )
 
-    @bot.message_handler(content_types=['photo'])
+@bot.message_handler(content_types=['photo'])
 def save_photo(message):
 
     data = load_db()
