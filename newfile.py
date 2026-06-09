@@ -89,8 +89,12 @@ def bantuan(message):
     )
 
 
-@bot.message_handler(content_types=['photo'])
-def save_photo(message):
+@bot.message_handler(func=lambda m: m.text == "📸 Kirim Foto")
+def tombol_foto(message):
+    bot.send_message(
+        message.chat.id,
+        "📸 Silakan kirim foto yang ingin dibackup."
+    )
     data = load_db()
 
     data["files"].append({
@@ -148,6 +152,10 @@ def mybackup(message):
             message.chat.id,
             "📂 Anda belum memiliki backup."
         )
+
+@bot.message_handler(func=lambda m: m.text == "📂 Backup Saya")
+def tombol_backup_saya(message):
+    mybackup(message)
 
 
 @bot.message_handler(commands=['saya'])
