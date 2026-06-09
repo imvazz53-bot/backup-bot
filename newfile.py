@@ -109,8 +109,12 @@ def tombol_foto(message):
     bot.reply_to(message, "✅ Foto berhasil dibackup.")
 
 
-@bot.message_handler(content_types=['video'])
-def save_video(message):
+@bot.message_handler(func=lambda m: m.text == "🎥 Kirim Video")
+def tombol_video(message):
+    bot.send_message(
+        message.chat.id,
+        "🎥 Silakan kirim video yang ingin dibackup."
+    )
     data = load_db()
 
     data["files"].append({
