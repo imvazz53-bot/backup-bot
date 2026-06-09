@@ -94,7 +94,6 @@ def tombol_foto(message):
         "📸 Silakan kirim foto yang ingin dibackup."
     )
 
-    
     @bot.message_handler(content_types=['photo'])
 def save_photo(message):
 
@@ -118,7 +117,6 @@ def tombol_video(message):
         message.chat.id,
         "🎥 Silakan kirim video yang ingin dibackup."
     )
-
     
     @bot.message_handler(content_types=['video'])
 def save_video(message):
