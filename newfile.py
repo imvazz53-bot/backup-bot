@@ -74,7 +74,6 @@ Semua file yang Anda kirim akan tersimpan sebagai cadangan pribadi.
     reply_markup=markup
     )
 
-
 @bot.message_handler(func=lambda m: m.text == "ℹ️ Bantuan")
 def bantuan(message):
     bot.reply_to(
@@ -87,7 +86,6 @@ def bantuan(message):
 3. Gunakan /mybackup untuk melihat backup Anda.
 """
     )
-
 
 @bot.message_handler(func=lambda m: m.text == "📸 Kirim Foto")
 def tombol_foto(message):
